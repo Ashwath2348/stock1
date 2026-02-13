@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, jsonify, request
 import yfinance as yf
 import feedparser
@@ -392,4 +393,5 @@ def stock_detail(symbol):
     return render_template("stock_detail.html", stock=stock_data)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=100000)
+    port = int(os.environ.get("PORT", 100000))
+    app.run(host="0.0.0.0", port=port)
