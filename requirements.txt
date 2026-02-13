@@ -1,0 +1,9 @@
+Flask
+yfinance
+feedparser
+pandas
+numpy
+requests
+beautifulsoup4
+matplotlib
+gunicorn

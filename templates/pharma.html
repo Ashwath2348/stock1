@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+body {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #f1f5f9, #eef2ff);
+  color: #0f172a;
+  padding: 0;
+  margin: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.4rem 1.8rem;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  margin: 1rem 1.5rem 0 1.5rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.timestamp {
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 500;
+  background: #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+.index-ticker-wrapper {
+  margin: 1rem 1.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.index-ticker-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.index-ticker {
+  display: inline-flex;
+  padding: 12px 18px;
+  gap: 26px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.index-item {
+  font-size: 1rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.index-name {
+  font-weight: 600;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.index-green { color: #16a34a; }
+.index-red   { color: #dc2626; }
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding-left: 10px;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #2563eb;
+}
+
+h2.positive { border-color: #16a34a; }
+h2.negative { border-color: #dc2626; }
+
+.container {
+  padding: 1.5rem;
+}
+
+
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.6rem;
+}
+
+.stock-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  position: relative;
+  transition: 0.25s ease;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+.stock-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(15,23,42,0.12);
+}
+
+
+.icon-top-right {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+}
+
+.icon-top-right img {
+  width: 30px;
+  opacity: 0.95;
+}
+
+
+.stock-symbol { font-size: 1.1rem; font-weight: 600; }
+.stock-name { font-size: 0.9rem; color: #64748b; margin-bottom: 0.6rem; }
+.stock-price { font-size: 1.45rem; font-weight: 600; }
+
+.stock-change {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.stock-change.positive { color: #16a34a; }
+.stock-change.negative { color: #dc2626; }
+
+.stock-footer {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.analysis-btn {
+  display: block;
+  padding: 0.7rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-align: center;
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  color: white;
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.port-btn {
+  width: 100%;
+  padding: 0.55rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #059669;
+  color: white;
+  transition: 0.25s ease;
+}
+
+.port-btn:hover { background: #047857; }
+.port-btn.added { background: gray !important; cursor: not-allowed !important; }
+
+</style>
+
+
+<!-- ====================== HEADER ====================== -->
+<header>
+  <div>
+    <h1>Pharma Sector Dashboard</h1>
+    <p>Top Gainers and Top Losers in the Indian Pharma Sector</p>
+  </div>
+  <div class="timestamp">Last updated: {{ last_updated }}</div>
+</header>
+
+<!-- ====================== INDEX TICKER ====================== -->
+<div class="index-ticker-wrapper">
+  <div class="index-ticker">
+    {% for idx in indices %}
+      <div class="index-item">
+        <span class="index-name">{{ idx.name }}</span>
+        <span>{{ idx.price }}</span>
+
+        {% if idx.change >= 0 %}
+          <span class="index-green">+{{ idx.change }} ({{ idx.change_percent }}%)</span>
+        {% else %}
+          <span class="index-red">{{ idx.change }} ({{ idx.change_percent }}%)</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+<!-- ====================== MAIN CONTENT ====================== -->
+<div class="container">
+
+  <!-- Gainers -->
+  <h2 class="positive">Top Gainers</h2>
+  <div class="stock-grid">
+    {% for stock in gainers %}
+    <div class="stock-card">
+
+      <div class="icon-top-right">
+        <img src="{{ url_for('static', filename='icons/candlestick-chart_6353948.png') }}">
+      </div>
+
+      <div class="stock-symbol">{{ stock.symbol }}</div>
+      <div class="stock-name">{{ stock.name }}</div>
+      <div class="stock-price">₹{{ stock.price }}</div>
+      <div class="stock-change positive">+{{ stock.change_percent }}%</div>
+
+      <div class="stock-footer">
+        <span>Vol: {{ stock.volume }}</span>
+        <span>MCap: {{ stock.market_cap }}</span>
+      </div>
+
+      <a href="{{ url_for('stock_detail', symbol=stock.symbol) }}" class="analysis-btn">
+        Detailed Analysis
+      </a>
+
+      {% if stock.added %}
+        <button class="port-btn added" disabled>✔ Already Added</button>
+      {% else %}
+        <button class="port-btn"
+                onclick="addToPortfolio('{{ stock.symbol }}','{{ stock.name }}','Telecom', this)">
+          ➕ Add to Portfolio
+        </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Losers -->
+  <h2 class="negative">Top Losers</h2>
+  <div class="stock-grid">
+    {% for stock in losers %}
+    <div class="stock-card">
+
+      <div class="icon-top-right">
+        <img src="{{ url_for('static', filename='icons/loss_17047002.png') }}">
+      </div>
+
+      <div class="stock-symbol">{{ stock.symbol }}</div>
+      <div class="stock-name">{{ stock.name }}</div>
+      <div class="stock-price">₹{{ stock.price }}</div>
+      <div class="stock-change negative">{{ stock.change_percent }}%</div>
+
+      <div class="stock-footer">
+        <span>Vol: {{ stock.volume }}</span>
+        <span>MCap: {{ stock.market_cap }}</span>
+      </div>
+
+      <a href="{{ url_for('stock_detail', symbol=stock.symbol) }}" class="analysis-btn">
+        Detailed Analysis
+      </a>
+
+      {% if stock.added %}
+        <button class="port-btn added" disabled>✔ Already Added</button>
+      {% else %}
+        <button class="port-btn"
+                onclick="addToPortfolio('{{ stock.symbol }}','{{ stock.name }}','Telecom', this)">
+          ➕ Add to Portfolio
+        </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+function addToPortfolio(symbol, name, sector, btn) {
+  btn.innerHTML = "⏳ Adding...";
+  btn.disabled = true;
+
+  fetch("/add_to_portfolio", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ symbol, name, sector })
+  })
+  .then(r => r.json())
+  .then(() => {
+    btn.innerHTML = "✔ Added";
+    btn.classList.add("added");
+    btn.disabled = true;
+  })
+  .catch(() => {
+    btn.innerHTML = "❌ Retry";
+    btn.disabled = false;
+  });
+}
+</script>
+
+{% endblock %}

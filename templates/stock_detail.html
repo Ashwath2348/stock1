@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ stock.symbol }} | Stock Detail</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #2962ff;
+      --green: #10b981;
+      --red: #ef4444;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --card: #ffffff;
+      --bg: #f4f7fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: auto;
+      padding: 26px 20px;
+    }
+
+    .header-card {
+      background: white;
+      padding: 28px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.05);
+      margin-bottom: 22px;
+    }
+
+    .back-btn {
+      border: none;
+      background: none;
+      font-size: 1rem;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: .2s;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    .stock-top {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .stock-symbol { font-size: 2.2rem; font-weight: 800; }
+    .company-name { font-size: 1rem; color: var(--muted); }
+
+    .price-value { font-size: 2rem; font-weight: 800; }
+    .price-change { font-weight:700; margin-top:-2px;}
+
+    .stats-grid {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: .25s;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.06);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border:1px solid #e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .stat-icon svg { width: 22px; height: 22px; color: #475569; }
+
+    .stat-label { font-size: 0.9rem; font-weight: 600; color:#6b7280; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color:#111827; }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+
+      align-items: stretch;
+    }
+
+    .card-box {
+      background:white;
+      padding:30px;
+      border-radius:22px;
+      border:1px solid #e5e7eb;
+      box-shadow:0 8px 28px rgba(0,0,0,0.05);
+      transition:.25s;
+    }
+    .card-box:hover {
+      transform: translateY(-2px);
+      box-shadow:0 14px 40px rgba(0,0,0,0.07);
+    }
+
+    .chart-wrap {
+      border-radius: 16px;
+      background: white;
+      padding: 12px;
+      border: 1px solid #eef1f5;
+      box-shadow: inset 0 0 0 1px #f0f0f0;
+    }
+
+    #priceChart {
+      width:100%!important;
+      height:360px!important;
+      border-radius:12px;
+      display:block;
+    }
+
+    .range-buttons button {
+      border:none;
+      padding:10px 16px;
+      border-radius:10px;
+      cursor:pointer;
+      background:#f1f5f9;
+      color:#475569;
+      font-weight:600;
+      margin-left:8px;
+      border:1px solid #e2e8f0;
+    }
+    .range-buttons button.active {
+      background:#2962ff;
+      color:white;
+      border-color:transparent;
+    }
+
+    /* -------- NEWS -------- */
+    .news-section {
+      background:white;
+      padding:26px;
+      border-radius:22px;
+      border:1px solid var(--border);
+      box-shadow:0 8px 28px rgba(0,0,0,0.05);
+
+      /* FIXED: now matches full left height */
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .news-card {
+      background:#f9fbff;
+      padding:20px;
+      border-radius:16px;
+      border:1px solid #e4ebf7;
+      margin-bottom:18px;
+      transition:.2s;
+    }
+    .news-card:hover { background:white; transform:scale(1.01); }
+
+    .sentiment-chip {
+      padding:4px 10px;
+      border-radius:6px;
+      font-size:0.8rem;
+      font-weight:700;
+    }
+    .sentiment-positive { background:#e8f9ef; color:#16a34a; }
+    .sentiment-neutral { background:#f1f5f9; color:#475569; }
+    .sentiment-negative { background:#fee2e2; color:#dc2626; }
+
+    /* -------- SIP Calculator (Below chart) -------- */
+    #calc-box {
+      background:white;
+      margin-top:30px;
+      border-radius:22px;
+      padding:28px;
+      border:1px solid #e5e7eb;
+      box-shadow:0 6px 22px rgba(0,0,0,0.04);
+    }
+
+    .toggle-wrap {
+      background:#eef2ff;
+      padding:8px;
+      border-radius:50px;
+      display:inline-flex;
+    }
+
+    .toggle {
+      padding:12px 20px;
+      border:none;
+      background:none;
+      border-radius:50px;
+      font-weight:700;
+      cursor:pointer;
+      color:#6b7280;
+    }
+
+    .toggle.active {
+      background:#2962ff;
+      color:white;
+      box-shadow:0 4px 16px rgba(41,98,255,0.3);
+    }
+
+    .calc-grid {
+      margin-top:26px;
+      display:flex;
+      gap:34px;
+      align-items:start;
+      flex-wrap:wrap;
+    }
+
+    input[type=range] {
+      width:100%;
+      margin:8px 0 20px;
+      height:10px;
+      background:linear-gradient(90deg,#10b981 50%, #e2e8f0 50%);
+      border-radius:6px;
+    }
+
+    .value-pill {
+      background:#ecfdf5;
+      padding:8px 14px;
+      border-radius:10px;
+      font-weight:800;
+      color:#047857;
+    }
+
+    /* small responsive */
+    @media (max-width: 980px) {
+      .grid-layout { grid-template-columns: 1fr; }
+      .news-section { height: auto; }
+      .calc-grid { flex-direction: column; }
+      #priceChart { height: 260px !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header-card">
+      <button class="back-btn" onclick="history.back()">← Back To Dashboard</button>
+
+      <div class="stock-top">
+        <div>
+          <div class="stock-symbol">{{ stock.symbol }}</div>
+          <div class="company-name">{{ stock.company_name }}</div>
+        </div>
+
+        <div style="text-align:right">
+          <div class="price-value">₹{{ stock.price }}</div>
+          <div class="price-change"
+               style="color: {{ '#10b981' if stock.change_percent >= 0 else '#ef4444' }}">
+            {{ '+' if stock.change_percent>=0 else '' }}{{ stock.change_percent }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i data-feather="bar-chart-2"></i></div>
+          <div>
+            <div class="stat-label">Volume</div>
+            <div class="stat-value">{{ stock.volume }}</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i data-feather="pie-chart"></i></div>
+          <div>
+            <div class="stat-label">Market Cap</div>
+            <div class="stat-value">{{ stock.market_cap }}</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i data-feather="percent"></i></div>
+          <div>
+            <div class="stat-label">PE Ratio</div>
+            <div class="stat-value">{{ stock.pe_ratio or '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid-layout">
+
+      <!-- LEFT: Chart + Calculator (SIP under chart as requested) -->
+      <div class="card-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h2 style="margin:0;font-size:1.3rem;">{{ stock.symbol }} Price Chart</h2>
+
+          <div class="range-buttons">
+            <button class="active" onclick="switchRange('1D',event)">1D</button>
+            <button onclick="switchRange('1M',event)">1M</button>
+            <button onclick="switchRange('6M',event)">6M</button>
+          </div>
+        </div>
+
+        <div class="chart-wrap" style="margin-top:14px;">
+          <canvas id="priceChart"></canvas>
+        </div>
+
+        <!-- SIP Calculator placed below the chart -->
+        <div id="calc-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:700">Portfolio Calculator</div>
+            <div style="color:var(--muted);font-size:0.95rem;">Projections are illustrative</div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <div class="toggle-wrap">
+              <button id="sip-btn" class="toggle active" onclick="setMode('sip')">SIP</button>
+              <button id="lump-btn" class="toggle" onclick="setMode('lump')">Lumpsum</button>
+            </div>
+
+            <div class="calc-grid">
+              <!-- Left inputs -->
+              <div style="flex:1; min-width:260px;">
+                <div style="display:flex;justify-content:space-between;">
+                  <div style="font-weight:600">Investment Amount</div>
+                  <div class="value-pill">₹ <span id="amountDisplay">25000</span></div>
+                </div>
+                <input id="amountRange" type="range" min="0" max="200000" step="500" value="25000">
+
+                <div style="display:flex;justify-content:space-between;">
+                  <div style="font-weight:600">Expected Return (p.a)</div>
+                  <div class="value-pill"><span id="returnDisplay">12</span>%</div>
+                </div>
+                <input id="returnRange" type="range" min="0" max="30" step="0.1" value="12">
+
+                <div style="display:flex;justify-content:space-between;">
+                  <div style="font-weight:600">Time Period</div>
+                  <div class="value-pill"><span id="yearsDisplay">10</span> Yr</div>
+                </div>
+                <input id="yearsRange" type="range" min="1" max="40" step="1" value="10">
+
+                <div style="margin-top:16px;color:var(--muted);font-size:0.95rem;">Estimated</div>
+                <div style="margin-top:10px;">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="color:#64748b">Invested Amount</span>
+                    <strong>₹ <span id="investedValue">0</span></strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="color:#64748b">Est. Returns</span>
+                    <strong style="color:var(--primary)">₹ <span id="returnsValue">0</span></strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;">
+                    <span style="color:#64748b">Total Value</span>
+                    <strong>₹ <span id="totalValue">0</span></strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right charts -->
+              <div style="flex:0.8; text-align:center; min-width:260px;">
+                <canvas id="sipDonut" style="width:260px;height:260px;"></canvas>
+                <canvas id="lumpLine" style="width:300px;height:240px;display:none;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: News -->
+      <div class="news-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 style="margin:0;font-size:1.1rem;">📰 Latest News</h2>
+          <div style="color:var(--muted);font-weight:600;">
+            
+          </div>
+        </div>
+
+        {% for n in stock.latest_news[:-4] %}
+
+        <div class="news-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span class="sentiment-chip
+              {% if n.sentiment=='positive' %}sentiment-positive{% endif %}
+              {% if n.sentiment=='neutral'  %}sentiment-neutral{% endif %}
+              {% if n.sentiment=='negative' %}sentiment-negative{% endif %}">
+              {{ n.sentiment }}
+            </span>
+            <span style="color:var(--muted);font-size:0.85rem;">{{ n.source }}</span>
+          </div>
+
+          <div style="font-weight:700;margin-bottom:8px;">{{ n.title }}</div>
+          <div style="color:#475569;margin-bottom:10px;">{{ n.summary }}</div>
+          <a href="{{ n.url }}" target="_blank" style="color:var(--primary);font-weight:600;">Read more →</a>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div><!-- end grid -->
+  </div><!-- end container -->
+
+  <!-- ICON INIT -->
+  <script> if (window.feather) feather.replace(); </script>
+
+  <!-- CHARTS + CALCULATOR SCRIPT -->
+  <script>
+    // helpers
+    function fmtINR2(n) {
+      if (!isFinite(n)) return "0.00";
+      return Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fmtINRWhole(n) {
+      if (!isFinite(n)) return "0";
+      return Math.round(n).toLocaleString('en-IN');
+    }
+
+    // data from backend
+    const ranges = {
+  "1D": { labels: {{ stock.chart_1d.dates | safe }}, prices: {{ stock.chart_1d.prices | safe }} },
+  "1M": { labels: {{ stock.chart_1m.dates | safe }}, prices: {{ stock.chart_1m.prices | safe }} },
+  "6M": { labels: {{ stock.chart_6m.dates | safe }}, prices: {{ stock.chart_6m.prices | safe }} }
+};
+
+
+    // create chart context
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+
+  // subtle gradient (smooth Groww-style)
+const grad = priceCtx.createLinearGradient(0, 0, 0, 360);
+grad.addColorStop(0, 'rgba(41, 98, 255, 0.18)');   // slightly stronger at top
+grad.addColorStop(1, 'rgba(41, 98, 255, 0.00)');   // fully transparent at bottom
+
+    // crosshair plugin (vertical line + right price bubble)
+    const crosshairPlugin = {
+      id: 'crosshairPlugin',
+      afterDraw(chart) {
+        const ctx = chart.ctx;
+        const tooltip = chart.tooltip;
+        if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
+        const active = tooltip._active[0];
+        const x = active.element.x;
+        const y = active.element.y;
+
+        // vertical line
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, chart.chartArea.top);
+        ctx.lineTo(x, chart.chartArea.bottom);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(99,102,241,0.12)';
+        ctx.stroke();
+        ctx.restore();
+
+        // bubble
+        const price = active.element.parsed.y;
+        const bubbleW = 96, bubbleH = 34;
+        const bubbleX = chart.chartArea.right - bubbleW - 8;
+        let bubbleY = active.element.y - bubbleH/2;
+        if (bubbleY < chart.chartArea.top + 6) bubbleY = chart.chartArea.top + 6;
+        if (bubbleY + bubbleH > chart.chartArea.bottom - 6) bubbleY = chart.chartArea.bottom - bubbleH - 6;
+
+        ctx.save();
+        // rounded rect
+        (function roundRect(x, y, w, h, r) {
+          const min = Math.min(w, h);
+          if (r > min/2) r = min/2;
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + w, y, x + w, y + h, r);
+          ctx.arcTo(x + w, y + h, x, y + h, r);
+          ctx.arcTo(x, y + h, x, y, r);
+          ctx.arcTo(x, y, x + w, y, r);
+          ctx.closePath();
+        })(bubbleX, bubbleY, bubbleW, bubbleH, 8);
+
+        ctx.fillStyle = '#111827';
+        ctx.fill();
+
+        ctx.fillStyle = '#fff';
+        ctx.font = '600 14px Inter, system-ui, -apple-system';
+        ctx.textAlign = 'center';
+        ctx.fillText('₹' + fmtINR2(price), bubbleX + bubbleW/2, bubbleY + 22);
+        ctx.restore();
+      }
+    };
+
+    Chart.register(crosshairPlugin);
+
+    const priceChart = new Chart(priceCtx, {
+      type: 'line',
+      data: {
+        labels: ranges['1D'].labels,
+        datasets: [{
+          label: '{{ stock.symbol }}',
+          data: ranges['1D'].prices,
+          borderColor: '#2962ff',
+          backgroundColor: grad,
+          fill: true,
+          tension: 0.32,
+          pointRadius: 0,
+          borderWidth: 2.2,
+          segment: { borderJoinStyle: 'round', borderCapStyle: 'round' }
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            mode: 'nearest',
+            intersect: false,
+            displayColors: false,
+            padding: 10,
+            backgroundColor: '#111827',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            callbacks: {
+              title: function(items) { return items[0].label || ''; },
+              label: function(item) { return 'Price: ₹' + fmtINR2(Number(item.raw)); }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: true, color: '#f1f5f9', lineWidth: 1 },
+            ticks: { color: '#94a3b8', maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
+          },
+          y: {
+            grid: { color: '#eef2f7', lineWidth: 1 },
+            ticks: {
+              color: '#94a3b8',
+              callback: function(value) {
+                if (Math.abs(value) >= 1e7) return '₹' + (value/1e7).toFixed(1) + 'Cr';
+                if (Math.abs(value) >= 1e5) return '₹' + (value/1e5).toFixed(1) + 'L';
+                return '₹' + Number(value).toLocaleString('en-IN');
+              }
+            }
+          }
+        },
+        animation: { duration: 350, easing: 'easeOutCubic' }
+      }
+    });
+
+    function switchRange(range, e) {
+      if (!ranges[range]) return;
+      priceChart.data.labels = ranges[range].labels;
+      priceChart.data.datasets[0].data = ranges[range].prices;
+      priceChart.update();
+      document.querySelectorAll('.range-buttons button').forEach(b=>b.classList.remove('active'));
+      if (e && e.target) e.target.classList.add('active');
+    }
+
+    // ---------------- SIP & Lumpsum ----------------
+    const amountRange = document.getElementById('amountRange');
+    const returnRange = document.getElementById('returnRange');
+    const yearsRange = document.getElementById('yearsRange');
+
+    const amountDisplay = document.getElementById('amountDisplay');
+    const returnDisplay = document.getElementById('returnDisplay');
+    const yearsDisplay = document.getElementById('yearsDisplay');
+
+    const investedValue = document.getElementById('investedValue');
+    const returnsValue = document.getElementById('returnsValue');
+    const totalValue = document.getElementById('totalValue');
+
+    const sipCanvas = document.getElementById('sipDonut');
+    const lumpCanvas = document.getElementById('lumpLine');
+
+    let sipChart = null;
+    let lumpChart = null;
+    let mode = 'sip';
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('sip-btn').classList.toggle('active', m === 'sip');
+      document.getElementById('lump-btn').classList.toggle('active', m === 'lump');
+      sipCanvas.style.display = m === 'sip' ? 'block' : 'none';
+      lumpCanvas.style.display = m === 'lump' ? 'block' : 'none';
+      updateValues();
+    }
+
+    function calcSIP(monthly, annualPct, years) {
+      const months = years * 12;
+      const r = annualPct / 100 / 12;
+      let fv = 0;
+      for (let i = 0; i < months; i++) {
+        fv = fv * (1 + r) + monthly;
+      }
+      const invested = monthly * months;
+      const returns = fv - invested;
+      return { invested, returns, total: fv };
+    }
+
+    function updateValues() {
+      amountDisplay.textContent = Number(amountRange.value).toLocaleString('en-IN');
+      returnDisplay.textContent = parseFloat(returnRange.value).toFixed(1);
+      yearsDisplay.textContent = yearsRange.value;
+
+     if (mode === 'sip') {
+  const { invested, returns, total } = calcSIP(
+    Number(amountRange.value),
+    Number(returnRange.value),
+    Number(yearsRange.value)
+  );
+
+  investedValue.textContent = fmtINRWhole(invested);
+  returnsValue.textContent = fmtINR2(returns);
+  totalValue.textContent = fmtINR2(total);
+
+  // FIX: destroy previous donut
+  if (sipChart) sipChart.destroy();
+
+  sipChart = new Chart(sipCanvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Invested', 'Est. returns'],
+      datasets: [{
+        data: [Math.round(invested), Math.round(returns)],
+        backgroundColor: ['#10b981', '#2962ff'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '70%',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+
+
+      } else {
+        const P = Number(amountRange.value);
+        const r = Number(returnRange.value);
+        const y = Number(yearsRange.value);
+        const labels = [];
+        const data = [];
+        for (let i=0;i<=y;i++){ labels.push(i===0? '0' : 'Yr '+i); data.push(Math.round(P * Math.pow(1 + r/100, i))); }
+        investedValue.textContent = fmtINRWhole(P);
+        returnsValue.textContent = fmtINR2(data[data.length-1]-P);
+        totalValue.textContent = fmtINR2(data[data.length-1]);
+        if (lumpChart) lumpChart.destroy();
+        lumpChart = new Chart(lumpCanvas.getContext('2d'), {
+          type: 'line',
+          data: { labels, datasets: [{ data, borderColor: '#2962ff', backgroundColor: 'rgba(41,98,255,0.08)', fill:true, tension:0.32, pointRadius:0, borderWidth:2.3, borderJoinStyle:'round', borderCapStyle:'round' }] },
+          options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ grid:{display:false}, ticks:{ color:'#94a3b8' } }, y:{ grid:{color:'#eef2f7'}, ticks:{ color:'#94a3b8' } } } }
+        });
+      }
+    }
+
+    amountRange.oninput = updateValues;
+    returnRange.oninput = updateValues;
+    yearsRange.oninput = updateValues;
+
+    // initial
+    setMode('sip');
+    updateValues();
+
+    // resize handling
+    window.addEventListener('resize', () => {
+      priceChart.resize();
+      if (sipChart) sipChart.resize();
+      if (lumpChart) lumpChart.resize();
+    });
+  </script>
+</body>
+</html>

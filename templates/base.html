@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StockQ</title>
+
+  <!-- GLOBAL CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 1rem 1.5rem;
+      background-color: #f8fafc;
+      border-radius: 14px;
+      margin-bottom: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    /* BUTTON STYLE */
+    .refresh-btn {
+      padding: 8px 18px;
+      background: #2563eb;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .refresh-btn:hover {
+      background: #1e40af;
+      transform: translateY(-1px);
+    }
+
+    .main {
+      margin-left: 240px;   /* Space for sidebar */
+      padding: 1.5rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🟦 SIDEBAR -->
+  {% include 'sidebar.html' %}
+
+  <!-- 🟩 PAGE MAIN CONTENT -->
+  <div class="main">
+
+    <!-- 🔹 HEADER BAR -->
+    <div class="header">
+      <div class="header-left">
+        <img src="{{ url_for('static', filename='icons/financial-decline.gif') }}" alt="Stock Dashboard Icon">
+        <h1>StockQ</h1>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="refresh-btn" onclick="goToDashboard()">Watchlist</button>
+        <button class="refresh-btn" onclick="refreshDashboard()">⟳ Refresh</button>
+      </div>
+    </div>
+
+    <!-- 🔹 PAGE BODY -->
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+  <script>
+    function goToDashboard() {
+      window.location.href = "/dashboard";
+    }
+
+    function refreshDashboard() {
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>

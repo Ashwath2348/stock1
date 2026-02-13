@@ -1,0 +1,177 @@
+<!-- templates/sidebar.html -->
+<aside class="sidebar">
+  <h2>Market Sectors</h2>
+  <p>Select a sector to explore</p>
+
+  <ul class="sector-list">
+
+    <!-- Automotive -->
+    <li class="sector-item {% if sector == 'Automotive' %}active{% endif %}">
+      <a href="{{ url_for('automotive') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/3d.gif') }}" alt="Automotive Icon" class="icon">
+          <div>
+            <h3>Automotive</h3>
+            <p>Automobile & EV companies</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+    <!-- Banking -->
+    <li class="sector-item {% if sector == 'Banking' %}active{% endif %}">
+      <a href="{{ url_for('banking') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/bank.gif') }}" alt="Banking Icon" class="icon">
+          <div>
+            <h3>Banking</h3>
+            <p>Financial institutions</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+    <!-- Energy -->
+    <li class="sector-item {% if sector == 'Energy' %}active{% endif %}">
+      <a href="{{ url_for('energy') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/sustainable-energy.gif') }}" alt="Energy Icon" class="icon">
+          <div>
+            <h3>Energy</h3>
+            <p>Oil, Gas & Renewables</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+    <!-- Technology -->
+    <li class="sector-item {% if sector == 'Technology' %}active{% endif %}">
+      <a href="{{ url_for('technology') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/laptop.gif') }}" alt="Technology Icon" class="icon">
+          <div>
+            <h3>Technology</h3>
+            <p>IT & Software Companies</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+    <!-- Pharma -->
+    <li class="sector-item {% if sector == 'Pharma' %}active{% endif %}">
+      <a href="{{ url_for('pharma') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/pharmacy.gif') }}" alt="Pharma Icon" class="icon">
+          <div>
+            <h3>Pharma</h3>
+            <p>Healthcare & Biotech</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+    <!-- Telecom -->
+    <li class="sector-item {% if sector == 'Telecom' %}active{% endif %}">
+      <a href="{{ url_for('telecom') }}">
+        <div class="sector-header">
+          <img src="{{ url_for('static', filename='icons/satellite.gif') }}" alt="Telecom Icon" class="icon">
+          <div>
+            <h3>Telecom</h3>
+            <p>Networking & 5G</p>
+          </div>
+        </div>
+      </a>
+    </li>
+
+  </ul>
+</aside>
+
+<style>
+/* ---- Premium Sidebar ---- */
+.sidebar {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 1.8rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+  min-height: 100vh;
+  width: 270px;
+  box-shadow: 4px 0 25px rgba(0,0,0,0.05);
+  border-radius: 0 20px 20px 0;
+}
+
+.sidebar h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.5px;
+}
+
+.sidebar p {
+  font-size: 0.92rem;
+  color: #475569;
+  margin-bottom: 1.4rem;
+}
+
+.sector-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sector-item {
+  margin-bottom: 1rem;
+}
+
+.sector-item a {
+  text-decoration: none;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.04);
+}
+
+/* Premium Hover + Active Styles */
+.sector-item.active a,
+.sector-item a:hover {
+  background: linear-gradient(135deg, #e0f2fe, #c7e9fc);
+  color: #0369a1;
+  transform: translateX(6px);
+  border: 1px solid #bae6fd;
+  box-shadow: 0 5px 14px rgba(3, 105, 161, 0.18);
+}
+
+.sector-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+/* Icon styling */
+.icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.18));
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #64748b;
+}
+</style>
