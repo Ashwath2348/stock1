@@ -57,10 +57,43 @@
       transform: translateY(-1px);
     }
 
+    /* DESKTOP LAYOUT (UNCHANGED) */
     .main {
       margin-left: 240px;   /* Space for sidebar */
       padding: 1.5rem;
     }
+
+    /* ============================= */
+    /* 📱 MOBILE ONLY CHANGES BELOW */
+    /* ============================= */
+
+    @media (max-width: 768px) {
+
+      /* Remove sidebar spacing */
+      .main {
+        margin-left: 0 !important;
+        padding: 1rem;
+      }
+
+      /* Stack header content vertically */
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      /* Make button container full width */
+      .header div[style] {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      /* Full width buttons */
+      .refresh-btn {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 

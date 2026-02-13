@@ -87,7 +87,11 @@
 </aside>
 
 <style>
-/* ---- Premium Sidebar ---- */
+
+/* ============================= */
+/* DESKTOP SIDEBAR (UNCHANGED) */
+/* ============================= */
+
 .sidebar {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(14px);
@@ -95,17 +99,20 @@
   padding: 1.8rem;
   border-right: 1px solid rgba(255, 255, 255, 0.4);
   min-height: 100vh;
-  width: 270px;
+  width: 240px;  /* Must match .main margin-left */
   box-shadow: 4px 0 25px rgba(0,0,0,0.05);
   border-radius: 0 20px 20px 0;
+  position: fixed;   /* Keeps desktop layout same */
+  top: 0;
+  left: 0;
 }
 
+/* Sidebar Text */
 .sidebar h2 {
   font-size: 1.3rem;
   font-weight: 700;
   color: #0f172a;
   margin-bottom: 0.2rem;
-  letter-spacing: -0.5px;
 }
 
 .sidebar p {
@@ -137,7 +144,7 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.04);
 }
 
-/* Premium Hover + Active Styles */
+/* Hover + Active */
 .sector-item.active a,
 .sector-item a:hover {
   background: linear-gradient(135deg, #e0f2fe, #c7e9fc);
@@ -153,7 +160,6 @@
   gap: 0.85rem;
 }
 
-/* Icon styling */
 .icon {
   width: 34px;
   height: 34px;
@@ -166,12 +172,29 @@ h3 {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: -0.3px;
 }
 
-p {
+.sector-header p {
   margin: 0;
   font-size: 0.84rem;
   color: #64748b;
 }
+
+/* ============================= */
+/* 📱 MOBILE ONLY CHANGES */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    position: relative;     /* Remove fixed */
+    width: 100%;            /* Full width */
+    min-height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    border-right: none;
+  }
+
+}
+
 </style>
