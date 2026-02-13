@@ -40,7 +40,6 @@
       margin: 0;
     }
 
-    /* BUTTON STYLE */
     .refresh-btn {
       padding: 8px 18px;
       background: #2563eb;
@@ -57,22 +56,44 @@
       transform: translateY(-1px);
     }
 
+    /* ===== DESKTOP (UNCHANGED) ===== */
     .main {
-      margin-left: 240px;   /* Space for sidebar */
+      margin-left: 270px;  /* matches sidebar width */
       padding: 1.5rem;
+    }
+
+    /* ===== MOBILE FIX ===== */
+    @media (max-width: 768px) {
+
+      .main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .header div[style] {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .refresh-btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- 🟦 SIDEBAR -->
   {% include 'sidebar.html' %}
 
-  <!-- 🟩 PAGE MAIN CONTENT -->
   <div class="main">
 
-    <!-- 🔹 HEADER BAR -->
     <div class="header">
       <div class="header-left">
         <img src="{{ url_for('static', filename='icons/financial-decline.gif') }}" alt="Stock Dashboard Icon">
@@ -85,12 +106,11 @@
       </div>
     </div>
 
-    <!-- 🔹 PAGE BODY -->
     {% block content %}
     {% endblock %}
+
   </div>
 
-  <!-- JAVASCRIPT -->
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
   <script>
