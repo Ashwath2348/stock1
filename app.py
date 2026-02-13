@@ -13,6 +13,25 @@ app = Flask(__name__)
 
 DB_NAME = "portfolio.db"
 
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS portfolio (
+            symbol TEXT PRIMARY KEY,
+            name TEXT,
+            sector TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+init_db()   # 🔥 THIS LINE IS REQUIRED
+
+
+
 COMPANY_MAP = {
     "M&M": "Mahindra and Mahindra Limited",
     "TVSMOTOR": "TVS Motor Company Limited",
@@ -393,5 +412,5 @@ def stock_detail(symbol):
     return render_template("stock_detail.html", stock=stock_data)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 100000))
+    port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
