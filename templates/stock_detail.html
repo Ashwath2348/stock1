@@ -260,6 +260,44 @@
       .calc-grid { flex-direction: column; }
       #priceChart { height: 260px !important; }
     }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 14px 12px;
+      }
+
+      .header-card,
+      .card-box,
+      .news-section,
+      #calc-box {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      .stock-top {
+        gap: 10px;
+      }
+
+      .stock-symbol {
+        font-size: 1.7rem;
+      }
+
+      .price-value {
+        font-size: 1.55rem;
+      }
+
+      .range-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .range-buttons button {
+        margin-left: 0;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 

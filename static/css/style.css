@@ -92,6 +92,55 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+}
+
+/* Android-first page-level responsiveness for sector templates */
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0.75rem;
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 0.85rem;
+  }
+
+  .stock-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .stock-card {
+    padding: 18px;
+  }
+
+  .analysis-btn {
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .stock-symbol {
+    font-size: 18px;
+  }
+
+  .stock-price {
+    font-size: 24px;
+  }
+
+  .stock-footer {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
 
 header h1 {
   font-size: 22px;

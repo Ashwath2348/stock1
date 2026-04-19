@@ -154,12 +154,67 @@
 @media (max-width: 768px) {
 
   .sidebar {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 20;
     width: 100%;
     min-height: auto;
     border-radius: 0;
     box-shadow: none;
     border-right: none;
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  }
+
+  .sidebar h2,
+  .sidebar > p {
+    display: none;
+  }
+
+  .sector-list {
+    display: flex;
+    gap: 0.55rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+  }
+
+  .sector-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sector-item {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+  }
+
+  .sector-item a {
+    padding: 0.55rem 0.75rem;
+    border-radius: 999px;
+  }
+
+  .sector-item.active a,
+  .sector-item a:hover {
+    transform: none;
+  }
+
+  .sector-header {
+    gap: 0.45rem;
+  }
+
+  .sector-header p {
+    display: none;
+  }
+
+  .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sector-header h3 {
+    font-size: 0.84rem;
+    font-weight: 600;
   }
 
 }
